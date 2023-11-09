@@ -1,6 +1,6 @@
 // Initialize the Lunr.js index
 var idx = lunr(function () {
-  this.ref('id');
+  this.ref('id'); // 이 부분을 다시 추가해야 합니다.
   this.field('title');
   this.field('content');
 
@@ -68,44 +68,34 @@ var idx = lunr(function () {
   // Add more documents as needed
 });
 
-// Lunr.js를 사용하여 검색 인덱스를 초기화합니다.
-var idx = lunr(function () {
-  this.field('title');
-  this.field('content');
-  // 여기에 추가 콘텐츠 필드를 인덱싱할 수 있습니다.
-  // 사이트의 모든 페이지와 포스트에 대한 인덱싱 로직을 추가합니다.
-});
-
-// 검색 결과를 표시할 함수를 구현합니다.
+// 검색 함수를 구현합니다.
 function search(query) {
   return idx.search(query).map(function (result) {
     return idx.documentStore.getDoc(result.ref);
   });
 }
 
-// 검색 바 요소에 이벤트 리스너를 추가합니다.
-document.querySelector('#search-input').addEventListener('input', function(e) {
-  // 사용자 입력을 가져옵니다.
-  var query = e.target.value;
-
-  // 디바운싱을 적용합니다.
-  clearTimeout(this.delay);
-  this.delay = setTimeout(function () {
-    var results = search(query);
-    displayResults(results); // 결과를 표시하는 함수를 호출합니다.
-  }, 300); // 디바운싱 지연 시간을 300ms로 설정합니다.
-});
-
-// 검색 결과를 사용자에게 보여주는 함수를 구현합니다.
+// 검색 결과를 표시할 함수를 구현합니다.
 function displayResults(results) {
   var searchResults = document.querySelector('#search-results');
-  // 이전 검색 결과를 클리어합니다.
-  searchResults.innerHTML = '';
+  searchResults.innerHTML = ''; // 이전 검색 결과를 클리어합니다.
 
-  // 새 검색 결과를 추가합니다.
   results.forEach(function (result) {
     var li = document.createElement('li');
     li.textContent = result.title; // 검색 결과의 제목을 표시합니다.
     searchResults.appendChild(li);
   });
 }
+
+// 검색 바 요소에 'keypress' 이벤트 리스너를 추가합니다.
+document.querySelector('#search-input').addEventListener('keypress', function(e) {
+  if (e.keyCode === 13) { // 엔터 키 코드는 13입니다.
+    e.preventDefault(); // 폼 제출을 방지합니다.
+    var query = this.value; // 사용자 입력을 가져옵니다.
+    console.log(query);
+    var results = search(query); // 검색 함수를 호출합니다.
+    console.log(results);
+    displayResults(results); // 결과를 표시합니다.
+  }
+});
+
